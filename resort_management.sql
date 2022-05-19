@@ -169,36 +169,39 @@ commit;
 select*from customer3;
 ---------------------------------------------------------------------------------------------------
 
---1) Find out the resorts where both customer ‘Tim’and customer ‘Bill’ stayed.
-select resort
+
+--1) Find out the resorts where both customer â€˜Timâ€™and customer â€˜Billâ€™ stayed.
+select rt.resort
 from customer3 cu,reservation r,reservation_line rl,service s,service_line sl,resort1 rt
 where cu.cust_id=r.cust_id
 and r.res_id=rl.res_id
 and rl.service_id=s.service_id
 and s.sl_id=sl.sl_id
 and sl.resort_id=rt.resort_id
-and first_name='tim'
-and first_name='bill';
+and cu.cust_id in (select cust_id 
+                from customer3
+                where first_name in ('tim','bill'));
 
---2) Find out the services which are available in the resort ‘Taj Club’ but not in ‘Taj Metro’
-select services
-from service s,service_line sl,resort rt
-where s.sl_id=sl.sl_id
-and sl.resort_id=rt.resort_id
-and resort='taj club'
-and resort not in ('taj metro');
+                
+--2) Find out the services which are available in the resort â€˜Taj Clubâ€™ but not in â€˜Taj Metroâ€™
+select service_name
+from service s,service_line sl,resort1 rt
+where sl.sl_id=s.sl_id
+and rt.resort_id=sl.resort_id
+and resort ='taj Club'
+and resort not in ('taj Metro');
 
---3) Display customer name, age group, city, regionand country who has reserved ‘Boat services’
-select first_name||last_name,age_group_id,city,region,country
-from customer cu,reservations r,reservation_line rl,service s,age_group a,city c,region rg,country ct
+--3) Display customer name, age group, city, regionand country who has reserved â€˜Boat servicesâ€™
+select cu.first_name||cu.last_name,a.age_group_id,c.city,rg.region,ct.country
+from customer3 cu,reservation r,reservation_line rl,service s,age_group a,city2 c,region rg,country1 ct
 where cu.cust_id=r.cust_id
 and r.res_id=rl.res_id
 and rl.service_id=s.service_id
 and cu.age_group_id=a.age_group_id
-and cu.city_id=c.city
+and cu.city_id=c.city_id
 and c.region_id=rg.region_id
 and rg.country_id=ct.country_id
-and service='boat services';
+and s.service_name='boat services';
 
 --4) Write a query to find customers who areaged between 60 and 70 and who havereservation in the next month in India resorts.
 select customer
