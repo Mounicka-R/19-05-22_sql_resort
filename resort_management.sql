@@ -240,5 +240,12 @@ and r.country_id=ct.country_id
 group by country)city
 where country.country=city.country(+);
 
-
+--10) Display the number of reservations we have basedon each resort.
+select rt.resort,count(r.res_id)as no_of_reservation
+from reservation r,reservation_line rl,service s,service_line sl,resort1 rt
+where r.res_id=rl.res_id
+and rl.service_id=s.service_id
+and s.sl_id=sl.sl_id
+and sl.resort_id=rt.resort_id
+group by resort;
 
