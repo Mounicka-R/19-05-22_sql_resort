@@ -180,7 +180,10 @@ and s.sl_id=sl.sl_id
 and sl.resort_id=rt.resort_id
 and cu.cust_id in (select cust_id 
                 from customer3
-                where first_name in ('tim','bill'));
+                where first_name = 'tim')
+and cu.cust_id in (select cust_id 
+                from customer3
+                where first_name = 'bill');
 
                 
 --2) Find out the services which are available in the resort ‘Taj Club’ but not in ‘Taj Metro’
@@ -188,8 +191,13 @@ select service_name
 from service s,service_line sl,resort1 rt
 where sl.sl_id=s.sl_id
 and rt.resort_id=sl.resort_id
-and resort ='taj Club'
-and resort not in ('taj Metro');
+and rt.resort_id in (select resort_id
+                 from resort1
+                 where resort='taj Club')
+and rt.resort_id not in (select resort_id
+                 from resort1
+                 where resort='taj Metro');
+
 
 --3) Display customer name, age group, city, regionand country who has reserved ‘Boat services’
 select cu.first_name||cu.last_name,a.age_group_id,c.city,rg.region,ct.country
@@ -218,45 +226,16 @@ and country='india';
 /
 
 --5) Display the regions where we have more than 10 cities.
-select region
-from region r,city c
-where r.region_id=region_id
-group by region
-having count(city_id)>10;
+select r.region
+from region r,city2 c
+where r.region_id=c.region_id
+group by r.region
+having count(c.city_id)>10;
 
 --6) Display age group wise customer count.
 select age_group_id,count(cust_id)
 from customer
 group by age_group_id;
-
---7) Display resort_name, resort_country, customer_name and customer_country based onthe reservations table.
-select res.resort,res.resort_country,cus.customer_name,cus.customer_country
-from (select resort,country as resort_country
-from country c, resort rt,reservations r,reservation_line rl,service s,service_line sl
-where c.country_id=rt.country_id
-and r.res_id=rl.res_id
-and rl.service_id=s.service_id
-and s.sl_id=sl.sl_id
-and sl.resort_id=rt.resort_id)res,
-(select first_name as customer_name,country as customer_country
-from customer cu,city c,region rg,country ct,reservations rt
-where cu.city_id=c.city_id
-and c.region_id=rg.region_id
-and rg.country_id=ct.country_id
-and rt.cust_id=cu.cust_id)cus
-where res.country=cus.country;
-
---8) What is the costliest service in each service_line?Display the result which displays service_name,price, maximum_price with in the service line.
-select s1.service,s1.price,mp.max_price
-from(select service_line,max(price) as max_price
-from service s,service_line sl
-where sl.sl_id=s.sl_id
-group by service_line)mp,service_line ss,service s1
-where mp.service_line=ss.service_line
-and ss.sl_id=s1.sl_id;
-
-
-
 
 
 --9)Display country_name, number of regions andnumber of cities for each country.
