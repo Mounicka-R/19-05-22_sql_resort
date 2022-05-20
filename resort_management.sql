@@ -227,6 +227,19 @@ from customer
 group by age_group_id;
 
 
+--8) What is the costliest service in each service_line?Display the result which displays service_name,price, maximum_price with in the service line.
+select sl.service_line,max(price) as max_price
+from service s,service_line sl
+where sl.sl_id=s.sl_id
+group by service_line;
+
+select ssl.service_name,ssl.price,max_service_price
+from(select s.service_name,s.price ,sl.service_line,dense_rank() over(partition by service_line order by (price)desc)max_service_price
+from service s,service_line sl
+where sl.sl_id=s.sl_id) ssl
+where max_service_price=1;
+
+
 --9)Display country_name, number of regions andnumber of cities for each country.
 select nvl(country.country,0)as country,nvl(no_region,0)as no_region,nvl(no_city,0)as no_city
 from (select ct.country ,count(r.region_id)as no_region
