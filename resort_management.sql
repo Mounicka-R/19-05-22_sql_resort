@@ -185,18 +185,19 @@ and cu.cust_id in (select cust_id
                 from customer3
                 where first_name = 'bill');
 
-                
+
 --2) Find out the services which are available in the resort ‘Taj Club’ but not in ‘Taj Metro’
-select service_name
+(select service_name
 from service s,service_line sl,resort1 rt
 where sl.sl_id=s.sl_id
 and rt.resort_id=sl.resort_id
-and rt.resort_id in (select resort_id
-                 from resort1
-                 where resort='taj Club')
-and rt.resort_id not in (select resort_id
-                 from resort1
-                 where resort='taj Metro');
+and rt.resort='taj Club')
+minus
+(select service_name
+from service s,service_line sl,resort1 rt
+where sl.sl_id=s.sl_id
+and rt.resort_id=sl.resort_id
+and rt.resort='taj Metro');
 
 
 --3) Display customer name, age group, city, regionand country who has reserved ‘Boat services’
@@ -211,19 +212,6 @@ and c.region_id=rg.region_id
 and rg.country_id=ct.country_id
 and s.service_name='boat services';
 
---4) Write a query to find customers who areaged between 60 and 70 and who havereservation in the next month in India resorts.
-select customer
-from customer cu,reservations r,reservation_line rl,service s,service_line sl,resort rt,country c
-where cu.cust_id=r.cust_id
-and r.res_id=rl.res_id
-and rl.service_id=s.service_id
-and s.sl_id=sl.sl_id
-and sl.resort_id=rt.resort_id
-and c.country_id=rt.resort_id
-and age between 60 and 70
-and to_char(res_date,'mm-yy')=to_char(add_months(sysdate,1),'mm-yy')
-and country='india';
-/
 
 --5) Display the regions where we have more than 10 cities.
 select r.region
@@ -232,11 +220,25 @@ where r.region_id=c.region_id
 group by r.region
 having count(c.city_id)>10;
 
+
 --6) Display age group wise customer count.
 select age_group_id,count(cust_id)
 from customer
 group by age_group_id;
 
+
+--9)Display country_name, number of regions andnumber of cities for each country.
+select nvl(country.country,0)as country,nvl(no_region,0)as no_region,nvl(no_city,0)as no_city
+from (select ct.country ,count(r.region_id)as no_region
+from region r, country1 ct
+where r.country_id=ct.country_id
+group by country)country ,
+(select ct.country ,count(c.city_id)as no_city
+from city2 c,region r, country1 ct
+where c.region_id=r.region_id
+and r.country_id=ct.country_id
+group by country)city
+where country.country=city.country(+);
 
 
 
