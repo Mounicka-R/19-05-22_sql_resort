@@ -238,20 +238,5 @@ from customer
 group by age_group_id;
 
 
---9)Display country_name, number of regions andnumber of cities for each country.
-select country, count(region_id),count(city_id)
-from city c,region r, country ct,resort rt
-where c.region_id=r.region_id
-and r.country_id=ct.country_id
-and ct.country_id=rt.country_id
-group by country;
 
---10) Display the number of reservations we have basedon each resort.
-select resort,count(res_id)
-from reservations r,reservation_line rl,service s,service_line sl,resort rt
-where r.res_id=rl.res_id
-and rl.service_id=s.service_id
-and s.sl_id=sl.sl_id
-and sl.resort_id=rt.resort_id
-group by resort;
 
